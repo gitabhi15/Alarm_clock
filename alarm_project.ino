@@ -5,22 +5,28 @@
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 RTC_DS3231 rtc;
 
-void setup() {
+int reset_button = 8;
+int alarm_set_button = 9;
+int switch_button = 10;
+
+  void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   lcd.init();
   lcd.backlight();
+  pinMode(alarm_set_button, INPUT);
+  pinMode(reset_button, INPUT);
+  pinMode(switch_button, INPUT);
+
   if (!rtc.begin()) {
     Serial.println("Couldn't find RTC");
-    while (1);
+    while (1)
+      ;
   }
 
   if (rtc.lostPower()) {
     Serial.println("RTC lost power, setting the time!");
-    // Following line sets the RTC to the date & time this sketch was compiled
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-    // You can also set it to a specific date/time:
-    // rtc.adjust(DateTime(2024, 12, 31, 23, 59, 59));
   }
 }
 
@@ -37,12 +43,8 @@ void loop() {
   lcd.print(second());
 }
 
-void reset_clock(){
-
+void reset_clock() {
 }
 
-void set_alarm(){
-
+void set_alarm() {
 }
-
-
