@@ -13,7 +13,6 @@ int decrement_button = 11;
 int confirm_alarm_button = 3;
 int alarm_mode_button = 4;
 
-DateTime now = rtc.now();
 
 void setup() {
   // put your setup code here, to run once:
@@ -40,9 +39,10 @@ void setup() {
 
 void loop() {
 
+  DateTime currTime = rtc.now();
   lcd.setCursor(0, 0);
-  lcd.print("Time: ")
-    regular_clock_mode();
+  lcd.print("Time: ");
+  regular_clock_mode(currTime);
 
 
   if (digitalRead(clk_reset_button) == 1) {
@@ -66,11 +66,12 @@ void loop() {
 
 void reset_normal_clock() {
   lcd.clear();
-  now = rtc.now();
-  rtc.adjust(DateTime(now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second()));
+  DateTime currTime = rtc.now();
+  rtc.adjust(DateTime(currTime.year(), currTime.month(), currTime.day(), currTime.hour(), currTime.minute(), currTime.second()));
 }
 
 void set_alarm() {
+  DateTime currTime = rtc.now();
   lcd.clear();
   lcd.setCursor(1, 2);
 
@@ -121,7 +122,7 @@ void set_alarm() {
     }
 
     // Confirm the alarm setting
-    if (digitalRead(alarm_confirm_button) == HIGH) {
+    if (digitalRead(confirm_alarm_button) == HIGH) {
       flag = false;
     }
   }
@@ -147,30 +148,31 @@ void set_alarm() {
   lcd.print(mins);
 
   // Adjust the alarm time on the RTC module
-  rtc.setAlarm1(DateTime(now.year(), now.month(), now.day(), hrs, mins, 0), DS3231_A1_Hour);
+  rtc.setAlarm1(DateTime(currTime.year(), currTime.month(), currTime.day(), hrs, mins, 0), DS3231_A1_Hour);
 }
 
 
-void regular_clock_mode() {
-  lcd.clear();
-  lcd.setCursor(1, 2);
+void regular_clock_mode(DateTime currTime) {
+  lcd.setCursor(2, 1);
 
-  int hrs = now.hour(), mins = now.minute(), secs = now.second();
+  currTime = rtc.now();
+  int hrs = currTime.hour(), mins = currTime.minute(), secs = currTime.second();
 
-  if (hrs < 0) {
+  if (hrs < 10) {
     lcd.print("0");
   }
-  lcd.print(now.hour());
+  lcd.print(hrs);
   lcd.print(" : ");
 
   if (mins < 10) {
     lcd.print("0");
   }
-  lcd.print(now.minute());
+  lcd.print(mins);
   lcd.print(" : ");
 
   if (secs < 10) {
     lcd.print("0");
   }
-  lcd.print(now.second());
+  lcd.print(secs);
+  delay(1000);
 }
